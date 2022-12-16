@@ -17,6 +17,7 @@ int dataSwitch;
 
 SimpleTimer timer;
 
+
 String myString;
 char rdata;
 
@@ -42,9 +43,11 @@ void loop() {
   }
   if(Serial.available() > 0){
     rdata = Serial.read();
-    myString = myString+rdata;
-    Serial.print(rdata);
-    if(rdata = '\n'){
+    myString = myString + rdata;
+    
+    Serial.print("myString: ");
+    Serial.println(myString);
+    if(rdata != '\n'){
       String l = getValue(myString,',',0);
       String m = getValue(myString,',',1);
       String n = getValue(myString,',',2);
@@ -53,10 +56,18 @@ void loop() {
       rLPG = l.toInt();
       rCH4 = m.toInt();
       rCO = n.toInt();
-      rButton = o.toInt();      
-
+      rButton = o.toInt();
+      
       myString = "";
     }
+    Serial.print("LPG: ");
+    Serial.println(rLPG);
+    Serial.print("CH4: ");
+    Serial.println(rCH4);
+    Serial.print("CO: ");
+    Serial.println(rCO);
+    Serial.print("Button: ");
+    Serial.println(rButton);
   }
 }
 
