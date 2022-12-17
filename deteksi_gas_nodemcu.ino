@@ -19,9 +19,8 @@ SimpleTimer timer;
 
 
 String myString;
-char rdata;
 
-long int rLPG,rCH4,rCO,rButton;
+long int rLPG,rCH4,rCO;
 
 void myTimerEvent(){
   Blynk.virtualWrite(V3,millis()/1000);
@@ -33,7 +32,7 @@ void setup() {
   timer.setInterval(1000L,LPGval);
   timer.setInterval(1000L,CH4val);
   timer.setInterval(1000L,COval);
-  timer.setInterval(1000L,ButtonVal);
+  //timer.setInterval(1000L,Buttonval);
 }
 
 void loop() {
@@ -42,32 +41,24 @@ void loop() {
     timer.run();
   }
   if(Serial.available() > 0){
-    rdata = Serial.read();
+    char rdata = Serial.read();
     myString = myString + rdata;
-    
-    Serial.print("myString: ");
-    Serial.println(myString);
-    if(rdata != '\n'){
+    if(rdata == '\n'){
       String l = getValue(myString,',',0);
       String m = getValue(myString,',',1);
       String n = getValue(myString,',',2);
-      String o = getValue(myString,',',3);
+      //String o = getValue(myString,',',3);
 
       rLPG = l.toInt();
       rCH4 = m.toInt();
       rCO = n.toInt();
-      rButton = o.toInt();
+      //rButton = o.toInt();
       
       myString = "";
     }
-    Serial.print("LPG: ");
-    Serial.println(rLPG);
-    Serial.print("CH4: ");
-    Serial.println(rCH4);
-    Serial.print("CO: ");
-    Serial.println(rCO);
-    Serial.print("Button: ");
-    Serial.println(rButton);
+    if(rLPG >= 1000 || rCH4 >= 1000 || rCO >= 50){
+      Blynk.logEvent("alarm", "Alarm Hidup");
+    }
   }
 }
 
@@ -86,10 +77,10 @@ void COval(){
   Blynk.virtualWrite(V2, sdata);
 }
 
-void ButtonVal(){
+/*void ButtonVal(){
   int sdata = rButton;
   Blynk.virtualWrite(V10, sdata);
-}
+}*/
 
 String getValue(String data, char separator, int index)
 {
@@ -107,7 +98,7 @@ String getValue(String data, char separator, int index)
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-BLYNK_WRITE(V10){
+/*BLYNK_WRITE(V10){
   dataSwitch = param.asInt();
   Serial.print(dataSwitch);
-}
+}*/
