@@ -46,9 +46,12 @@ long int sLPG = 0;
 long int sCH4 = 0;
 long int sCO = 0;
 
-int dataSwitch; //data switch dari blynk melalui node mcu
+//int dataSwitch; //data switch dari blynk melalui node mcu
 int dataButton; //data button
 String sdata; //data yang dikirimkan ke node mcu
+
+void alarmOn();
+void alarmOff();
 
 SoftwareSerial espSerial(9,10); //pin serial
 LiquidCrystal_I2C lcd(0x27, 16, 2); //alamat dan ukuran lcd
@@ -76,13 +79,11 @@ void setup() {
   MQ2.init();
   MQ4.init();
   MQ7.init();
-
   
   //kalibrasi Sensor MQ
   float calcR0_MQ2 = 0;
   float calcR0_MQ4 = 0;
   float calcR0_MQ7 = 0;
-
   for(int i = 1; i<=10; i ++)
   {
     MQ2.update();
@@ -103,15 +104,16 @@ void loop() {
   MQ2.update();
   MQ4.update();
   MQ7.update();
+  delay(1000);
 
   //baca nilai sensor MQ
   sLPG = MQ2.readSensor();
   sCH4 = MQ4.readSensor();
   sCO = MQ7.readSensor();
 
-  if(digitalRead(button_on) == HIGH){
+  if((digitalRead(button_on) == HIGH)){
     dataButton = 1;
-  }else if(digitalRead(button_off) == HIGH){
+  }else if((digitalRead(button_off) == HIGH)){
     dataButton = 0;
   }
 
@@ -132,32 +134,27 @@ void loop() {
   lcd.setCursor(13,0);
   lcd.print(sCO);
 
-  if(sLPG >= 1571 || sCH4 >= 10000 || sCO >= 1500 || dataButton == 1){
-    alarmOn();        
-  }else if(sLPG < 1571 || sCH4 < 10000 || sCO < 1500 || dataButton == 0){
-    alarmOff();   
+  if(sLPG >= 1000 || sCH4 >= 1000 || sCO >= 50 || dataButton == 1){
+    alarmOn();      
+  }else if(sLPG < 1000 || sCH4 < 1000 || sCO < 50 || dataButton == 0){
+    alarmOff();
   }
-  
+
   if(espSerial.available() == 0){
-    sdata = sdata + sLPG + "," + sCH4 + "," + sCO + "," + dataButton;
-    Serial.println(sdata);
+    sdata = sdata + sLPG + "," + sCH4 + "," + sCO;
     espSerial.println(sdata);
+    Serial.println(sdata);
     delay(1000);
     sdata = "";
   }
-
-  if(espSerial.available() > 0){
+  /*if(espSerial.available() > 0){
     dataSwitch = espSerial.parseInt();
-    delay(100);
-
+    delay(500);
     if(dataSwitch == 1){
       alarmOn();
-      dataButton = 1;
     }else if(dataSwitch == 0){
       alarmOff();
-      dataButton = 0; 
-    }
-  }
+    }*/
 }
 
 void alarmOn(){ //fungsi untuk alarm hidup
