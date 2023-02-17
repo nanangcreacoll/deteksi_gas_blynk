@@ -1,3 +1,4 @@
 # deteksi_gas_blynk
-special project untuk PKM \n
+special project untuk PKM
+
 Deteksi gas dari Arduino yang ditampilkan di Blynk melalui Node MCU
